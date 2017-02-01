@@ -1,4 +1,4 @@
-get.rate.matrix_alt <-
+get.rate.matrix <-
   function(object,stack.static,stack.grad,normalize.gradients=FALSE,grad.point.decreasing=TRUE,directions=4,zero.idx=integer()){
     
     ##
