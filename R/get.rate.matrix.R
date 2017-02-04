@@ -1,10 +1,11 @@
 get.rate.matrix <-
-  function(object,stack.static,stack.grad,normalize.gradients=FALSE,grad.point.decreasing=TRUE,directions=4,zero.idx=integer()){
+  function(object, stack.static, stack.grad, normalize.gradients=FALSE, grad.point.decreasing=TRUE, directions=4, zero.idx=integer(), coef){
     
     ##
     ## Inputs:
     ##
     ##  object - A fitted GLM or GAM (from mgcv) object
+    ##  coef - a coefficient vector to be used other than what is provided in object
     ##  stack.static - a raster stack or raster layer of "location-based" covariates
     ##  stack.grad - a raster stack or raster layer of "gradient based covariates
     ##  normalize.gradients - logical.  If TRUE, then normalize all gradient
@@ -72,11 +73,16 @@ get.rate.matrix <-
     
     X$tau = 1
     
-    R[idx.mot] = as.vector(predict(object, newdata=X, type="response"))
+    if(missing(coef)){
+      R[idx.mot] = as.vector(predict(object, newdata=X, type="response"))
+    } else{
+      if(length(coef) != length(coefficients(object))) stop("'coef' vector is not the correct length!")
+      R[idx.mot] = exp(X%*%coef)
+    }
     
     ## exclude "zero" cells
     if(length(zero.idx)>0){
-      R[,zero.idx]=0
+      R[zero.idx,zero.idx]=0
     }
     
     R
